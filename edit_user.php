@@ -1,0 +1,228 @@
+<?php
+session_start();
+require './config.php';
+
+$table = 'users_tbl';
+
+// Generate CSRF Token
+if (empty($_SESSION['__csrf'])) {
+    $_SESSION['__csrf'] = bin2hex(random_bytes(32));
+}
+
+$id = $_GET['id'] ?? null;
+$rows = '*';
+$join = null;
+$where = "id = $id";
+$order = null;
+$limit = null;
+$offset = null;
+
+$user = $database->find($table, $rows, $join, $where, $order, $limit, $offset);
+
+// Update User Details
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update'])) {
+    // verify csrf token
+    if (!hash_equals($_SESSION['__csrf'], $_POST['__csrf'])) {
+        $database->errors[] = "Invalid CSRF Token";
+        header('Location: ' . basename(__FILE__) . '?id=' . intval($id));
+        exit;
+    }
+
+    $id = intval($_POST['id']);
+    $fullName = htmlspecialchars($_POST['fullname']);
+    $email = htmlspecialchars($_POST['email']);
+    $userRole = htmlspecialchars($_POST['userRole']);
+
+    $where = "id = $id";
+    $redirect = './all_user.php?success=1&message=User Updated Successfully!';
+
+    // Base parameters without password
+    $params = [
+        'user_fullname' => $fullName,
+        'user_email' => $email,
+        'user_role' => $userRole,
+    ];
+
+    // Only update password if current_password is provided
+    if (!empty($_POST['current_password'])) {
+        $currentPassword = $_POST['current_password'];
+        $newPassword = $_POST['password'];
+        $confirmPassword = $_POST['confirmPassword'];
+
+        if (!password_verify($currentPassword, $user['user_password'])) {
+            $database->errors[] = "Wrong Current password";
+            header('Location: ' . basename(__FILE__) . '?id=' . intval($id));
+            exit;
+        } elseif ($newPassword !== $confirmPassword) {
+            $database->errors[] = "Password & Confirm Password Must be Matched";
+            header('Location: ' . basename(__FILE__) . '?id=' . intval($id));
+            exit;
+        } elseif (strlen($newPassword) < 8) {
+            $database->errors[] = "Password must be in 8 characters";
+            header('Location: ' . basename(__FILE__) . '?id=' . intval($id));
+            exit;
+        }
+
+        // Add password to params
+        $params['user_password'] = password_hash($newPassword, PASSWORD_DEFAULT);
+    }
+
+    $userValidate = $params;
+
+    if ($database->validate($userValidate)) {
+        $database->update($table, $params, $where, $redirect);
+    }
+}
+
+
+require './header.php';
+?>
+
+<!--**********************************
+    Content body start
+***********************************-->
+<div class="content-body">
+    <div class="container-fluid">
+        <div class="page-titles">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">Dashboard</li>
+                <li class="breadcrumb-item">Users</li>
+                <li class="breadcrumb-item active"><a href="javascript:void(0)">Edit User</a></li>
+            </ol>
+        </div>
+        <!-- row -->
+        <div class="row">
+            <div class="col-xl-10 col-lg-11 mx-auto">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-primary">
+                        <h4 class="card-title text-white mb-0">
+                            <i class="fa fa-user-plus mr-2"></i>Edit User
+                        </h4>
+                    </div>
+                    <?php
+                    if ($database->getErrors()) {
+                        foreach ($database->getErrors() as $error) {
+                            echo "<div class='alert alert-danger'>$error</div>";
+                        }
+                    }
+
+
+                    ?>
+                    <div class="card-body p-4">
+                        <div class="basic-form">
+                            <form method="post" action="<?= $_SERVER['PHP_SELF'] ?>">
+                                <input type="hidden" name="__csrf" value="<?= htmlspecialchars($_SESSION['__csrf']) ?>">
+                                <input type="hidden" name="id" value="<?= htmlspecialchars($user['id']) ?>">
+                                <!-- Personal Information -->
+                                <div class="mb-4 pb-3 border-bottom">
+                                    <h5 class="text-primary mb-3">
+                                        <i class="fa fa-user mr-2"></i>Personal Information
+                                    </h5>
+                                    <div class="form-row">
+                                        <div class="form-group col-md-6">
+                                            <label for="fullname" class="font-weight-bold">
+                                                Full Name <span class="text-danger">*</span>
+                                            </label>
+                                            <input type="text" class="form-control form-control-lg" id="fullname"
+                                                name="fullname" placeholder="Enter full name"
+                                                value="<?= htmlspecialchars($user['user_fullname']) ?>">
+                                        </div>
+                                        <div class="form-group col-md-6">
+                                            <label for="email" class="font-weight-bold">
+                                                Email Address <span class="text-danger">*</span>
+                                            </label>
+                                            <input type="email" class="form-control form-control-lg" id="email"
+                                                name="email" placeholder="Enter email address"
+                                                value="<?= htmlspecialchars($user['user_email']) ?>">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Account Security -->
+                                <div class="mb-4 pb-3 border-bottom">
+                                    <h5 class="text-primary mb-3">
+                                        <i class="fa fa-lock mr-2"></i>Account Security
+                                    </h5>
+                                    <div class="form-row">
+                                        <div class="form-group col-md-6">
+                                            <label for="password" class="font-weight-bold">
+                                                Current Password <span class="text-danger">*</span>
+                                            </label>
+                                            <input type="password" class="form-control form-control-lg" id="password"
+                                                name="current_password" placeholder="Enter password" minlength="8">
+                                            <small class="form-text text-muted">
+                                                <i class="fa fa-info-circle"></i> Minimum 8 characters required
+                                            </small>
+                                        </div>
+                                        <div class="form-group col-md-6">
+                                            <label for="password" class="font-weight-bold">
+                                                New Password <span class="text-danger">*</span>
+                                            </label>
+                                            <input type="password" class="form-control form-control-lg" id="password"
+                                                name="password" placeholder="Enter password" minlength="8">
+                                        </div>
+                                        <div class="form-group mt-4 col-md-6">
+                                            <label for="confirmPassword" class="font-weight-bold">
+                                                Confirm Password <span class="text-danger">*</span>
+                                            </label>
+                                            <input type="password" class="form-control form-control-lg"
+                                                id="confirmPassword" name="confirmPassword"
+                                                placeholder="Confirm password">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Account Settings -->
+                                <div class="mb-4">
+                                    <h5 class="text-primary mb-3">
+                                        <i class="fa fa-cog mr-2"></i>Account Settings
+                                    </h5>
+                                    <div class="form-row">
+                                        <div class="form-group col-md-6">
+                                            <label for="userRole" class="font-weight-bold">
+                                                User Role <span class="text-danger">*</span>
+                                            </label>
+                                            <select id="userRole" name="userRole"
+                                                class="form-control form-control-lg default-select">
+                                                <option value="" selected disabled>Select a role...</option>
+                                                <option value="manager"
+                                                    <?= ($user['user_role'] === 'manager') ? 'selected' : '' ?>>Manager
+                                                </option>
+                                                <option value="employee"
+                                                    <?= ($user['user_role'] === 'employee') ? 'selected' : '' ?>>
+                                                    Employee
+                                                </option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Action Buttons -->
+                                <div class="form-row mt-5">
+                                    <div class="form-group col-md-12 text-center text-md-left">
+                                        <button type="submit" name="update" class="btn btn-primary btn-lg px-5">
+                                            <i class="fa fa-check mr-2"></i>Save Changes
+                                        </button>
+                                        <button type="reset" class="btn btn-outline-secondary btn-lg px-4 ml-2">
+                                            <i class="fa fa-undo mr-2"></i>Reset
+                                        </button>
+                                        <a href="all_user.php" class="btn btn-outline-danger btn-lg px-4 ml-2">
+                                            <i class="fa fa-times mr-2"></i>Cancel
+                                        </a>
+                                    </div>
+                                </div>
+
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+<!--**********************************
+    Content body end
+***********************************-->
+
+<?php require './footer.php'; ?>
