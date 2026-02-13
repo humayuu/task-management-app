@@ -1,6 +1,10 @@
 <?php
+session_start();
 require './config.php';
-
+if (!isset($_SESSION['status']) || $_SESSION['status'] !== true) {
+    header('Location: index.php');
+    exit;
+}
 
 
 $table = 'users_tbl';

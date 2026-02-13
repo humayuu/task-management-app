@@ -1,6 +1,10 @@
 <?php
 session_start();
 require './config.php';
+if (!isset($_SESSION['status']) || $_SESSION['status'] !== true) {
+    header('Location: index.php');
+    exit;
+}
 
 
 // Generate CSRF Token
@@ -77,8 +81,8 @@ require './header.php';
     <div class="container-fluid">
         <div class="page-titles">
             <ol class="breadcrumb">
-                 <li class="breadcrumb-item">Dashboard</li>
-                 <li class="breadcrumb-item">Task</li>
+                <li class="breadcrumb-item">Dashboard</li>
+                <li class="breadcrumb-item">Task</li>
                 <li class="breadcrumb-item active"><a href="javascript:void(0)">Create Task</a></li>
             </ol>
         </div>

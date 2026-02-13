@@ -1,5 +1,10 @@
 <?php
+session_start();
 require './config.php';
+if (!isset($_SESSION['status']) || $_SESSION['status'] !== true) {
+    header('Location: index.php');
+    exit;
+}
 
 
 $table = 'task_tbl';
@@ -60,12 +65,6 @@ require './header.php';
         <!-- row -->
         <div class="row">
             <div class="card-body">
-                <?php if (isset($_GET['success']) && $_GET['success'] == 1): ?>
-                    <div class="alert alert-success alert-dismissible fade show" role="alert">
-                        <p class="m-1"><strong><?= $_GET['message'] ?></strong></p>
-                        <button type="button" class="close m-2" data-dismiss="alert">&times;</button>
-                    </div>
-                <?php endif; ?>
                 <div class="table-responsive">
                     <?php if ($tasks): ?>
                         <table class="table table-responsive-md">
@@ -109,7 +108,7 @@ require './header.php';
                                             <a href="edit_task.php?id=<?= htmlspecialchars($task['id']) ?>"
                                                 class="btn btn-primary shadow sharp"><i class="fa fa-pencil"></i></a>
 
-                                            <a href="delete_task.php?id=<?= htmlspecialchars($task['id']) ?>"
+                                            <a href="delete_task.php?id=<?= $task['id'] ?>"
                                                 onclick=" return confirm('Are you sure?')"
                                                 class="btn btn-danger shadow sharp"><i class="fa fa-trash"></i></a>
                                         </td>

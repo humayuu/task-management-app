@@ -1,7 +1,7 @@
 <?php
 require './config.php';
 
-$id = intval($_GET['id']);
+$id = isset($_GET['id']);
 $table = 'task_tbl';
 $where = "id = $id";
 $redirect = './all_task.php';

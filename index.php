@@ -1,6 +1,11 @@
 <?php
 if (session_status() === PHP_SESSION_NONE) session_start();
 
+if (isset($_SESSION['status']) == true) {
+    header('Location: dashboard.php');
+    exit;
+}
+
 require './config.php';
 
 // Generate CSRF Token

@@ -2,6 +2,11 @@
 session_start();
 require './config.php';
 
+if (!isset($_SESSION['status']) || $_SESSION['status'] !== true) {
+    header('Location: index.php');
+    exit;
+}
+
 
 // Generate CSRF Token
 if (empty($_SESSION['__csrf'])) {

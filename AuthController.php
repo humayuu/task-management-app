@@ -86,6 +86,7 @@ class Auth
             $_SESSION['fullname']  = $user['user_fullname'];
             $_SESSION['email']     = $user['user_email'];
             $_SESSION['userImage'] = $user['profile_image'];
+            $_SESSION['userRole']  = $user['user_role'];
 
             // Redirect to inserted location
             header('Location: ' . $redirect);

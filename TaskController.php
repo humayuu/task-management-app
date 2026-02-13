@@ -155,7 +155,7 @@ class TaskController extends Auth
                 header('Location: ' . $redirect);
                 exit;
             }
-            return false;
+            return true;
         } catch (Exception $e) {
             $this->conn->rollBack();
             $this->errors[] = "Error in delete data " . $e->getMessage();

@@ -1,3 +1,4 @@
+<?php if (session_status() === PHP_SESSION_NONE) session_start(); ?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -145,23 +146,26 @@
                         </a>
                     </li>
 
-                    <li>
-                        <a class="has-arrow ai-icon" href="javascript:void(0)" aria-expanded="false">
-                            <i class="flaticon-381-user"></i>
-                            <span class="nav-text">Manage Users</span>
-                        </a>
-                        <ul aria-expanded="false">
-                            <li><a href="./all_user.php">All Users</a></li>
-                            <li><a href="./add_user.php">Add Users</a></li>
-                        </ul>
-                    </li>
+                    <?php if ($_SESSION['userRole'] == 'admin'): ?>
 
-                    <li>
-                        <a class="ai-icon" href="create_task.php" aria-expanded="false">
-                            <i class="flaticon-381-add"></i>
-                            <span class="nav-text">Create Task</span>
-                        </a>
-                    </li>
+                        <li>
+                            <a class="has-arrow ai-icon" href="javascript:void(0)" aria-expanded="false">
+                                <i class="flaticon-381-user"></i>
+                                <span class="nav-text">Manage Users</span>
+                            </a>
+                            <ul aria-expanded="false">
+                                <li><a href="./all_user.php">All Users</a></li>
+                                <li><a href="./add_user.php">Add Users</a></li>
+                            </ul>
+                        </li>
+
+                        <li>
+                            <a class="ai-icon" href="create_task.php" aria-expanded="false">
+                                <i class="flaticon-381-add"></i>
+                                <span class="nav-text">Create Task</span>
+                            </a>
+                        </li>
+                    <?php endif; ?>
 
                     <li>
                         <a class="ai-icon" href="./all_task.php" aria-expanded="false">
