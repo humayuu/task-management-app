@@ -170,7 +170,7 @@
                     <li>
                         <a class="ai-icon" href="./all_task.php" aria-expanded="false">
                             <i class="flaticon-381-list-1"></i>
-                            <span class="nav-text">All Task</span>
+                            <span class="nav-text"><?= $_SESSION['userRole'] == 'admin' ? 'All Task' : 'My Task' ?></span>
                         </a>
                     </li>
                     <li>

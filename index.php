@@ -8,6 +8,14 @@ if (isset($_SESSION['status']) == true) {
 
 require './config.php';
 
+
+$currentDate = date('Y-m-d');
+$newStatus = 'overdue';
+$sql = "UPDATE task_tbl SET status = ? WHERE due_date <= ?";
+$taskParams = [$newStatus, $currentDate];
+$database->sql($sql, $taskParams);
+
+
 // Generate CSRF Token
 if (empty($_SESSION['__csrf'])) {
     $_SESSION['__csrf'] = bin2hex(random_bytes(32));

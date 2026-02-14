@@ -135,7 +135,7 @@ require './header.php';
                                                 Due Date <span class="text-danger">*</span>
                                             </label>
                                             <input type="date" class="form-control form-control-lg" id="due_date"
-                                                name="due_date">
+                                                name="due_date" min="<?= date('Y-m-d') ?>">
                                         </div>
                                         <div class="form-group col-md-6">
                                             <label for="description" class="font-weight-bold">

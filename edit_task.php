@@ -13,7 +13,14 @@ if (empty($_SESSION['__csrf'])) {
 
 // For task
 $table = 'task_tbl';
-$id = isset($_GET['id']) ?? '';
+$id = isset($_GET['id']) ? intval($_GET['id']) : 0;
+
+// Redirect if no valid ID
+if ($id <= 0) {
+    header('Location: all_task.php');
+    exit;
+}
+
 $rows = "*";
 $join = null;
 $where = "id = " . $id;
@@ -115,7 +122,7 @@ require './header.php';
                                         ?>
                                         <div class="form-group col-md-6">
                                             <label for="due_date" class="font-weight-bold"> Due Date <span class="text-danger">*</span> </label>
-                                            <input type="date" class="form-control form-control-lg" id="due_date" name="due_date" value="<?= $formatted_date ?>">
+                                            <input type="date" class="form-control form-control-lg" id="due_date" min="<?= date('Y-m-d') ?>" name="due_date" value="<?= $formatted_date ?>">
                                         </div>
 
                                         <div class="form-group col-md-6">

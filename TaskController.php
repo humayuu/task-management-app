@@ -255,4 +255,15 @@ class TaskController extends Auth
             $this->error('Error in show Pagination', $e);
         }
     }
+
+    /**
+     * Function for Pass raw sql query
+     */
+
+    public function sql($sql, $params = [])
+    {
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute($params);
+        return $stmt;
+    }
 }

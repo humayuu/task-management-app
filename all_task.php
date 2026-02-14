@@ -107,10 +107,14 @@ require './header.php';
                                         <td>
                                             <a href="edit_task.php?id=<?= htmlspecialchars($task['id']) ?>"
                                                 class="btn btn-primary shadow sharp"><i class="fa fa-pencil"></i></a>
+                                            <a href="view_task.php?id=<?= htmlspecialchars($task['id']) ?>"
+                                                class="btn btn-secondary shadow sharp"><i class="fa fa-eye"></i></a>
 
-                                            <a href="delete_task.php?id=<?= $task['id'] ?>"
-                                                onclick=" return confirm('Are you sure?')"
-                                                class="btn btn-danger shadow sharp"><i class="fa fa-trash"></i></a>
+                                            <?php if ($_SESSION['userRole'] == 'admin'): ?>
+                                                <a href="delete_task.php?id=<?= $task['id'] ?>"
+                                                    onclick=" return confirm('Are you sure?')"
+                                                    class="btn btn-danger shadow sharp"><i class="fa fa-trash"></i></a>
+                                            <?php endif; ?>
                                         </td>
 
                                     </tr>

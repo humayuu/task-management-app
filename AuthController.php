@@ -61,8 +61,10 @@ class Auth
 
         try {
 
-            $stmt = $this->conn->prepare("SELECT * FROM $table WHERE user_email = :email");
+            $status = 'active';
+            $stmt = $this->conn->prepare("SELECT * FROM $table WHERE user_email = :email AND user_status = :ustatus");
             $stmt->bindParam(':email', $email);
+            $stmt->bindParam(':ustatus', $status);
             $stmt->execute();
             $user = $stmt->fetch();
 
