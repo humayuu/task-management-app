@@ -6,8 +6,9 @@ if (!isset($_SESSION['status']) || $_SESSION['status'] !== true) {
     exit;
 }
 
-
-$id = isset($_GET['id']);
+// For user
+$users = $database->all('users_tbl', "*", null, null, 'id DESC', null, null);
+$id = $_GET['id'];
 $table = 'task_tbl';
 $rows = '*';
 $join = null;
@@ -65,22 +66,29 @@ require './header.php';
                                         <label for="due_date" class="font-weight-bold">
                                             Due Date <span class="text-danger">*</span>
                                         </label>
+                                        <?php
+                                        $formatted_date = date('Y-m-d', strtotime($task['due_date']));
+                                        ?>
                                         <input type="date" class="form-control form-control-lg" id="due_date"
-                                            name="due_date" readonly disabled>
+                                            name="due_date" readonly disabled value="<?= $formatted_date ?>">
                                     </div>
                                     <div class="form-group col-md-6">
                                         <label for="description" class="font-weight-bold">
                                             Description <span class="text-danger">*</span>
                                         </label>
                                         <textarea class="form-control form-control-lg" id="description"
-                                            name="description" rows="3" placeholder="Enter task description" readonly disabled></textarea>
+                                            name="description" rows="3" placeholder="Enter task description" readonly disabled><?= htmlspecialchars($task['description']) ?></textarea>
                                     </div>
                                     <div class="form-group col-md-6">
                                         <label for="assign_to" class="font-weight-bold">
                                             Assign to <span class="text-danger">*</span>
                                         </label>
-                                        <input type="text" class="form-control form-control-lg" id="due_date"
-                                            name="due_date" readonly disabled>
+                                        <select class="form-control form-control-lg" disabled id="user" name="user_id">
+                                            <option value="">Select user...</option>
+                                            <?php foreach ($users as $user): ?>
+                                                <option dis class="text-primary" value="<?= htmlspecialchars($user['id']) ?>" <?= ($task['user_id'] == $user['id']) ? 'selected' : null  ?>> <?= htmlspecialchars($user['user_fullname']) ?></option>
+                                            <?php endforeach; ?>
+                                        </select>
                                     </div>
                                 </div>
                             </div>

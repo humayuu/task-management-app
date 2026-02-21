@@ -30,7 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['issSubmitted'])) {
     $userRole = htmlspecialchars($_POST['userRole']);
     $status = htmlspecialchars($_POST['status']);
     $file = $_FILES['profileImage'];
-    $uploadDir = '/uploads/profile_image/';
+    $uploadDir = '/uploads/';
 
     $userValidate = $database->validate([
         'user_fullname' => $fullName,

@@ -34,6 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['issSubmitted'])) {
     $redirect = './profile_detail.php?success=1&message=Profile Detail Updated Successfully!';
     $name = htmlspecialchars($_POST['fullname']);
     $email = htmlspecialchars($_POST['email']);
+    $uploadDir = '/uploads/';
 
     $userValidate = $database->validate([
         'user_fullname' => $name,

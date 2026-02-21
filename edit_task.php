@@ -29,50 +29,15 @@ $limit = null;
 $offset = null;
 $task = $database->find($table, $rows, $join, $where, $order, $limit, $offset);
 
+// Safety check
+if (!$task) {
+    header('Location: all_task.php');
+    exit;
+}
+
 
 // For user
 $users = $database->all('users_tbl', "*", null, null, 'id DESC', null, null);
-
-
-
-
-// Update Task
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['issSubmitted'])) {
-    // Verify CSRF Token
-    if (!hash_equals($_SESSION['__csrf'], $_POST['__csrf'])) {
-        $database->errors[] = 'Invalid CSRF token';
-        header('Location: ') . basename(__FILE__);
-        exit;
-    }
-
-    $id = $_POST['id'];
-    $table = 'task_tbl';
-    $where = "id = $id";
-    $redirect = './all_task.php';
-    $title = htmlspecialchars($_POST['title']);
-    $description = htmlspecialchars($_POST['description']);
-    $dueDate = htmlspecialchars($_POST['due_date']);
-    $user = htmlspecialchars($_POST['user_id']);
-
-    $userValidate = $database->validate([
-        'title' => $title,
-        'description' => $description,
-        'due_date' => $dueDate,
-        'user_id' => $user,
-    ]);
-
-    $params = [
-        'title' => $title,
-        'description' => $description,
-        'due_date' => $dueDate,
-        'user_id' => $user,
-    ];
-
-
-    if ($userValidate) {
-        $database->update($table, $params, $where, $redirect);
-    }
-}
 
 
 require './header.php';
@@ -101,7 +66,7 @@ require './header.php';
                     </div>
                     <div class="card-body p-4">
                         <div class="basic-form">
-                            <form method="post" action="<?= htmlspecialchars($_SERVER['PHP_SELF']) ?>">
+                            <form method="post" action="update_task.php">
                                 <input type="hidden" name="__csrf" value="<?= htmlspecialchars($_SESSION['__csrf']) ?>">
                                 <input type="hidden" name="id" value="<?= htmlspecialchars($task['id']) ?>">
                                 <!-- Task Information -->

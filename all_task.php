@@ -8,24 +8,27 @@ if (!isset($_SESSION['status']) || $_SESSION['status'] !== true) {
 
 
 $table = 'task_tbl';
-$rows = "*";
-$join  = "LEFT JOIN users_tbl ON task_tbl.user_id = users_tbl.id";
+$rows = "task_tbl.*, users_tbl.user_fullname";
+$join = "LEFT JOIN users_tbl ON task_tbl.user_id = users_tbl.id";
 $where = null;
 
+$pendingActive = "";
+$overDueActive = "";
+$defaultClass = "text-primary";
+
 if (isset($_GET['filter'])) {
+    $defaultClass = "";
     if ($_GET['filter'] === 'pending_task') {
-        $where = "status = 'pending'";
+        $where = "task_tbl.status = 'pending'";
         $pendingActive = "text-primary";
     } elseif ($_GET['filter'] === 'overdue_task') {
-        $where = "status = 'overdue'";
+        $where = "task_tbl.status = 'overdue'";
         $overDueActive = "text-primary";
     }
-} else {
-    $defaultClass = 'text-primary';
 }
 
 $order = 'task_tbl.id DESC';
-$limit = 10;
+$limit = 5;
 
 $pageNo = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 $offset = ($pageNo - 1) * $limit;
@@ -62,8 +65,15 @@ require './header.php';
                 </ol>
             </nav>
         </div>
+        <?php if (isset($_GET['success']) && $_GET['success'] == 1): ?>
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <p class="m-1"><strong><?= $_GET['message'] ?></strong></p>
+                <button type="button" class="close m-2" data-dismiss="alert">&times;</button>
+            </div>
+        <?php endif; ?>
         <!-- row -->
         <div class="row">
+
             <div class="card-body">
                 <div class="table-responsive">
                     <?php if ($tasks): ?>
@@ -105,9 +115,9 @@ require './header.php';
                                             </span>
                                         </td>
                                         <td>
-                                            <a href="edit_task.php?id=<?= htmlspecialchars($task['id']) ?>"
+                                            <a href="edit_task.php?id=<?= $task['id'] ?>"
                                                 class="btn btn-primary shadow sharp"><i class="fa fa-pencil"></i></a>
-                                            <a href="view_task.php?id=<?= htmlspecialchars($task['id']) ?>"
+                                            <a href="view_task.php?id=<?= $task['id'] ?>"
                                                 class="btn btn-secondary shadow sharp"><i class="fa fa-eye"></i></a>
 
                                             <?php if ($_SESSION['userRole'] == 'admin'): ?>

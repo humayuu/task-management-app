@@ -81,7 +81,7 @@ require './header.php';
                                         if (empty($user['profile_image'])) {
                                             $img = './uploads/profile_image/default.png';
                                         } else {
-                                            $img = "./uploads/profile_image/" . $user['profile_image'];
+                                            $img = "./uploads/" . $user['profile_image'];
                                         }
                                         ?>
                                         <td><img width="100" src="<?= $img ?>" alt="image">

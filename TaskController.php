@@ -71,25 +71,28 @@ class TaskController extends Auth
     /**
      * Function for show single Task
      */
-    public function find($table, $rows = '*', $join = null, $where = null, $order = null, $limit = null,  $offset = null)
+    public function find($table, $rows = '*', $join = null, $where = null, $order = null, $limit = null, $offset = null)
     {
         if (!$this->tableExists($table)) return false;
 
-
         try {
             $sql = "SELECT $rows FROM $table";
-            if ($join !== null) $sql .= " $join";
-            if ($where !== null) $sql .= " WHERE $where";
-            if ($order !== null) $sql .= " ORDER BY $order";
-            if ($limit !== null || $offset !== null) $sql .= " LIMIT $limit, $offset";
+            if ($join !== null)   $sql .= " $join";
+            if ($where !== null)  $sql .= " WHERE $where";
+            if ($order !== null)  $sql .= " ORDER BY $order";
 
+            if ($limit !== null && $offset !== null) {
+                $sql .= " LIMIT $offset, $limit";
+            } elseif ($limit !== null) {
+                $sql .= " LIMIT $limit";
+            }
 
             $stmt = $this->conn->prepare($sql);
             $stmt->execute();
             $this->result = $stmt->fetch();
-            return $this->result; // single rows
+            return $this->result;
         } catch (Exception $e) {
-            $this->errors[] = "Error in fetch all data " . $e->getMessage();
+            $this->errors[] = "Error in fetch data " . $e->getMessage();
             return false;
         }
     }
