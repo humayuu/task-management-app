@@ -1,58 +1,164 @@
-<?php require './header.php' ?>
+<?php
+session_start();
+require './config.php';
+
+if (!isset($_SESSION['status']) || $_SESSION['status'] !== true) {
+    header('Location: index.php');
+    exit;
+}
+
+$usersCount = 0;
+$taskCount = 0;
+
+$user = $database->all('users_tbl', '*', null, null, null, null, null);
+$usersCount = count($user);
+
+// Admin Check
+if (isset($_SESSION['userRole']) && $_SESSION['userRole'] === 'admin') {
+    // ALl Task
+    $allTask = $database->all('task_tbl', '*', null, null, null, null, null);
+    $allTaskCount =  count($allTask);
+
+    // Over Due
+    $overDueTask = $database->all('task_tbl', '*', null, "status = 'overdue'", null, null, null);
+    $overDueTaskCount =  count($overDueTask);
+
+    // Pending
+    $pendingTask = $database->all('task_tbl', '*', null, "status = 'pending'", null, null, null);
+    $pendingTaskCount =  count($pendingTask);
+
+
+    // In Progress
+    $inProgressTask = $database->all('task_tbl', '*', null, "status = 'in_progress'", null, null, null);
+    $inProgressTaskCount =  count($inProgressTask);
+
+
+    // Complete
+    $completeTask = $database->all('task_tbl', '*', null, "status = 'complete'", null, null, null);
+    $completeTaskCount =  count($completeTask);
+} else {
+    $userId = $_SESSION['userId'];
+    $table = 'task_tbl';
+    $rows = '*';
+    $join = null;
+    $where = "user_id = " . $userId;
+    $order = null;
+    $limit = null;
+    $offset = null;
+
+    // ALl Task
+    $allTask = $database->all($table, $rows, $join, $where, $order, $limit, $offset);
+    $allTaskCount =  count($allTask);
+
+    // Over Due
+    $overDueTask = $database->all('task_tbl', '*', null, "user_id = '$userId' AND status = 'overdue'", null, null, null);
+    $overDueTaskCount =  count($overDueTask);
+
+    // Pending
+    $pendingTask = $database->all('task_tbl', '*', null, "user_id = '$userId' AND status = 'pending'", null, null, null);
+    $pendingTaskCount =  count($pendingTask);
+
+
+    // In Progress
+    $inProgressTask = $database->all('task_tbl', '*', null, "user_id = '$userId' AND status = 'in_progress'", null, null, null);
+    $inProgressTaskCount =  count($inProgressTask);
+
+
+    // Complete
+    $completeTask = $database->all('task_tbl', '*', null, "user_id = '$userId' AND status = 'complete'", null, null, null);
+    $completeTaskCount =  count($completeTask);
+}
+
+require './header.php';
+?>
 <!--**********************************
             Content body start
         ***********************************-->
 <div class="content-body">
-    <!-- row -->
-    <div class="container-fluid">
-        <div class="form-head d-flex align-items-center mb-sm-4 mb-3">
-            <div class="mr-auto">
-                <h2 class="text-black font-w600">Dashboard</h2>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-xl-3 col-sm-6">
-                <div class="card">
-                    <div class="card-body">
-                        <div class="media align-items-center">
-                            <div class="media-body mr-3">
-                                <h2 class="fs-34 text-black font-w600">76</h2>
-                                <span>Appointment</span>
-                            </div>
-                            <svg width="40" height="40" viewBox="0 0 40 40" fill="none"
-                                xmlns="http://www.w3.org/2000/svg">
-                                <g clip-path="url(#clip0)">
-                                    <path
-                                        d="M32.04 4.08H31.24V2.04C31.24 0.8 30.4 0 29.2 0C28 0 27.16 0.8 27.16 2.04V4.08H13.88V2.04C13.88 0.8 13.08 0 11.84 0C10.6 0 9.80002 0.8 9.80002 2.04V4.08H7.96002C4.08002 4.08 0.800018 7.36 0.800018 11.24V32.88C0.800018 36.76 4.08002 40.04 7.96002 40.04H32.04C35.92 40.04 39.2 36.76 39.2 32.88V11.24C39.2 7.36 35.92 4.08 32.04 4.08ZM7.96002 8.16H32.04C33.68 8.16 35.12 9.6 35.12 11.24V14.08H4.88002V11.24C4.88002 9.6 6.32002 8.16 7.96002 8.16ZM32.04 35.92H7.96002C6.32002 35.92 4.88002 34.48 4.88002 32.84V18.16H35.08V32.84C35.12 34.48 33.68 35.92 32.04 35.92Z"
-                                        fill="#007A64" />
-                                    <path
-                                        d="M16.12 20.6H14.48C13.44 20.6 12.84 21.4 12.84 22.24V24.08C12.84 25.12 13.64 25.72 14.48 25.72H16.12C17.16 25.72 17.76 24.92 17.76 24.	08V22.44C17.96 21.44 17.16 20.6 16.12 20.6Z"
-                                        fill="#007A64" />
-                                    <path
-                                        d="M25.52 20.6H23.88C22.84 20.6 22.24 21.4 22.24 22.24V24.08C22.24 25.12 23.04 25.72 23.88 25.72H25.52C26.56 25.72 27.16 24.92 27.16 24.08V22.44C27.16 21.44 26.32 20.6 25.52 20.6Z"
-                                        fill="#007A64" />
-                                    <path
-                                        d="M16.12 28.56H14.48C13.44 28.56 12.84 29.36 12.84 30.2V31.84C12.84 32.88 13.64 33.48 14.48 33.48H16.12C17.16 33.48 17.76 32.68 17.76 31.84V30.2C17.96 29.4 17.16 28.56 16.12 28.56Z"
-                                        fill="#007A64" />
-                                </g>
-                                <defs>
-                                    <clipPath id="clip0">
-                                        <rect width="40" height="40" fill="white" />
-                                    </clipPath>
-                                </defs>
-                            </svg>
+    <div class="row ml-1">
+
+        <?php if ($_SESSION['userRole'] == 'admin'): ?>
+            <!-- Users -->
+            <div class="col-xl-3 col-sm-6 mb-4">
+                <div class="card shadow-sm">
+                    <div class="card-body d-flex justify-content-between align-items-center">
+                        <div>
+                            <h2 class="fs-34 text-black font-w600"><?= $usersCount ?></h2>
+                            <span>Users</span>
                         </div>
-                    </div>
-                    <div class="progress  rounded-0" style="height:4px;">
-                        <div class="progress-bar rounded-0 bg-secondary progress-animated"
-                            style="width: 50%; height:4px;" role="progressbar">
-                            <span class="sr-only">50% Complete</span>
-                        </div>
+                        <i class="bi bi-people-fill fs-1 text-primary f-size"></i>
                     </div>
                 </div>
             </div>
+        <?php endif; ?>
+
+        <!-- All Task -->
+        <div class="col-xl-3 col-sm-6 mb-4">
+            <div class="card shadow-sm">
+                <div class="card-body d-flex justify-content-between align-items-center">
+                    <div>
+                        <h2 class="fs-34 text-black font-w600"><?= $allTaskCount ?></h2>
+                        <span>All Task</span>
+                    </div>
+                    <i class="bi bi-list-task fs-1 text-dark f-size"></i>
+                </div>
+            </div>
         </div>
+
+        <!-- Overdue -->
+        <div class="col-xl-3 col-sm-6 mb-4">
+            <div class="card shadow-sm">
+                <div class="card-body d-flex justify-content-between align-items-center">
+                    <div>
+                        <h2 class="fs-34 text-black font-w600"><?= $overDueTaskCount ?></h2>
+                        <span>Overdue</span>
+                    </div>
+                    <i class="bi bi-exclamation-circle-fill fs-1 text-danger f-size"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pending -->
+        <div class="col-xl-3 col-sm-6 mb-4">
+            <div class="card shadow-sm">
+                <div class="card-body d-flex justify-content-between align-items-center">
+                    <div>
+                        <h2 class="fs-34 text-black font-w600"><?= $pendingTaskCount ?></h2>
+                        <span>Pending</span>
+                    </div>
+                    <i class="bi bi-hourglass-split fs-1 text-warning f-size"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- In Progress -->
+        <div class="col-xl-3 col-sm-6 mb-4">
+            <div class="card shadow-sm">
+                <div class="card-body d-flex justify-content-between align-items-center">
+                    <div>
+                        <h2 class="fs-1 text-black font-w600"><?= $inProgressTaskCount ?></h2>
+                        <span>In Progress</span>
+                    </div>
+                    <i class="bi bi-arrow-repeat fs-1 text-info f-size"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Completed -->
+        <div class="col-xl-3 col-sm-6 mb-4">
+            <div class="card shadow-sm">
+                <div class="card-body d-flex justify-content-between align-items-center">
+                    <div>
+                        <h2 class="fs-34 text-black font-w600"><?= $completeTaskCount ?></h2>
+                        <span>Completed</span>
+                    </div>
+                    <i class="bi bi-check-circle-fill fs-1 text-success f-size"></i>
+                </div>
+            </div>
+        </div>
+
     </div>
+</div>
 </div>
 </div>
 <!--**********************************

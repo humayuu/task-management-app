@@ -9,6 +9,7 @@ if (isset($_SESSION['status']) == true) {
 require './config.php';
 
 
+// Update Status 
 $currentDate = date('Y-m-d');
 $newStatus = 'overdue';
 $sql = "UPDATE task_tbl SET status = ? WHERE due_date <= ?";

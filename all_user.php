@@ -1,7 +1,7 @@
 <?php
 session_start();
 require './config.php';
-if (!isset($_SESSION['status']) || $_SESSION['status'] !== true) {
+if (!isset($_SESSION['status']) || $_SESSION['status'] !== true || $_SESSION['userRole'] !== 'admin') {
     header('Location: index.php');
     exit;
 }
@@ -53,6 +53,9 @@ require './header.php';
                 <?php endif; ?>
                 <div class="table-responsive">
                     <?php if ($users): ?>
+                        <div class="d-flex justify-content-end mb-3">
+                            <a href="./add_user.php" class="btn btn-primary">Create User</a>
+                        </div>
                         <table class="table table-responsive-md">
                             <thead class="table-dark text-center">
                                 <tr>
@@ -79,7 +82,7 @@ require './header.php';
                                         <td class="text-info"><?= strtoupper(htmlspecialchars($user['user_role'])) ?></td>
                                         <?php
                                         if (empty($user['profile_image'])) {
-                                            $img = './uploads/profile_image/default.png';
+                                            $img = './uploads/default_avatar.png';
                                         } else {
                                             $img = "./uploads/" . $user['profile_image'];
                                         }

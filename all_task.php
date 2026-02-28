@@ -7,34 +7,66 @@ if (!isset($_SESSION['status']) || $_SESSION['status'] !== true) {
 }
 
 
-$table = 'task_tbl';
-$rows = "task_tbl.*, users_tbl.user_fullname";
-$join = "LEFT JOIN users_tbl ON task_tbl.user_id = users_tbl.id";
-$where = null;
+if (isset($_SESSION['userRole']) && $_SESSION['userRole'] == 'admin') {
+    $table = 'task_tbl';
+    $rows = "task_tbl.*, users_tbl.user_fullname";
+    $join = "LEFT JOIN users_tbl ON task_tbl.user_id = users_tbl.id";
+    $where = null;
 
-$pendingActive = "";
-$overDueActive = "";
-$defaultClass = "text-primary";
+    $pendingActive = "";
+    $overDueActive = "";
+    $defaultClass = "text-primary";
 
-if (isset($_GET['filter'])) {
-    $defaultClass = "";
-    if ($_GET['filter'] === 'pending_task') {
-        $where = "task_tbl.status = 'pending'";
-        $pendingActive = "text-primary";
-    } elseif ($_GET['filter'] === 'overdue_task') {
-        $where = "task_tbl.status = 'overdue'";
-        $overDueActive = "text-primary";
+    if (isset($_GET['filter'])) {
+        $defaultClass = "";
+        if ($_GET['filter'] === 'pending_task') {
+            $where = "task_tbl.status = 'pending'";
+            $pendingActive = "text-primary";
+        } elseif ($_GET['filter'] === 'overdue_task') {
+            $where = "task_tbl.status = 'overdue'";
+            $overDueActive = "text-primary";
+        }
     }
+
+    $order = 'task_tbl.id DESC';
+    $limit = 5;
+
+    $pageNo = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+    $offset = ($pageNo - 1) * $limit;
+
+    $sl = 1;
+    $tasks = $database->all($table, $rows, $join, $where, $order, $limit, $offset);
+} else {
+    $userId  = $_SESSION['userId'];
+    $table = 'task_tbl';
+    $rows = "task_tbl.*, users_tbl.user_fullname";
+    $join = "LEFT JOIN users_tbl ON task_tbl.user_id = users_tbl.id";
+    $where = "user_id = '$userId'";
+
+    $pendingActive = "";
+    $overDueActive = "";
+    $defaultClass = "text-primary";
+
+    if (isset($_GET['filter'])) {
+        $defaultClass = "";
+        if ($_GET['filter'] === 'pending_task') {
+            $where = "task_tbl.status = 'pending'";
+            $pendingActive = "text-primary";
+        } elseif ($_GET['filter'] === 'overdue_task') {
+            $where = "task_tbl.status = 'overdue'";
+            $overDueActive = "text-primary";
+        }
+    }
+
+    $order = 'task_tbl.id DESC';
+    $limit = 5;
+
+    $pageNo = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+    $offset = ($pageNo - 1) * $limit;
+
+    $sl = 1;
+    $tasks = $database->all($table, $rows, $join, $where, $order, $limit, $offset);
 }
-
-$order = 'task_tbl.id DESC';
-$limit = 5;
-
-$pageNo = isset($_GET['page']) ? (int)$_GET['page'] : 1;
-$offset = ($pageNo - 1) * $limit;
-
-$sl = 1;
-$tasks = $database->all($table, $rows, $join, $where, $order, $limit, $offset);
 
 require './header.php';
 
@@ -114,11 +146,14 @@ require './header.php';
                                                 <?= strtoupper(htmlspecialchars($task['status'])) ?>
                                             </span>
                                         </td>
+                                        <?php $url =  ($_SESSION['userRole'] == 'admin') ? 'edit_task.php' : 'update _task_status.php';  ?>
                                         <td>
-                                            <a href="edit_task.php?id=<?= $task['id'] ?>"
-                                                class="btn btn-primary shadow sharp"><i class="fa fa-pencil"></i></a>
-                                            <a href="view_task.php?id=<?= $task['id'] ?>"
-                                                class="btn btn-secondary shadow sharp"><i class="fa fa-eye"></i></a>
+                                            <?php if ($task['status'] !== 'complete'): ?>
+                                                <a href="<?= $url ?>?id=<?= $task['id'] ?>"
+                                                    class="btn btn-primary shadow sharp"><i class="fa fa-pencil"></i></a>
+                                                <a href="view_task.php?id=<?= $task['id'] ?>"
+                                                    class="btn btn-secondary shadow sharp"><i class="fa fa-eye"></i></a>
+                                            <?php endif; ?>
 
                                             <?php if ($_SESSION['userRole'] == 'admin'): ?>
                                                 <a href="delete_task.php?id=<?= $task['id'] ?>"

@@ -14,6 +14,7 @@
     <link href="./vendor/bootstrap-select/dist/css/bootstrap-select.min.css" rel="stylesheet">
     <link href="./vendor/bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css" rel="stylesheet">
     <link href="./css/style.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
     <link
         href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&family=Roboto:wght@100;300;400;500;700;900&display=swap"
         rel="stylesheet">
@@ -73,6 +74,10 @@
             -webkit-text-fill-color: #212529 !important;
             -webkit-box-shadow: 0 0 0px 1000px #fff inset;
         }
+
+        .f-size {
+            font-size: 3rem;
+        }
     </style>
 </head>
 
@@ -86,51 +91,31 @@
         <!--**********************************
             Nav header start
         ***********************************-->
-        <div class="nav-header">
-            <a href="index.html" class="brand-logo d-flex align-items-center">
-                <h1 class="mb-0">Task Management</h1>
+        <div class="nav-header d-flex justify-content-between align-items-center">
+            <a href="index.html" class="brand-logo d-flex justify-content-center align-items-center">
+                <?php if (!empty($_SESSION['userImage'])): ?>
+                    <img src="./uploads/<?= $_SESSION['userImage'] ?>"
+                        width="100"
+                        class="rounded-circle"
+                        alt="User Logo" />
+                <?php else: ?>
+                    <img src="./uploads/default_avatar.png"
+                        width="100"
+                        class="rounded-circle"
+                        alt="User Logo" />
+                <?php endif; ?>
             </a>
 
-            <!-- <div class="nav-control">
+            <div class="nav-control">
                 <div class="hamburger">
                     <span class="line"></span>
                     <span class="line"></span>
                     <span class="line"></span>
                 </div>
-            </div> -->
-        </div>
-        <!--**********************************
-            Nav header end
-        ***********************************-->
-
-        <!--**********************************
-            Header start
-        ***********************************-->
-        <div class="header">
-            <div class="header-content">
-                <nav class="navbar navbar-expand">
-                    <div class="collapse navbar-collapse justify-content-between">
-                        <div class="header-left">
-                        </div>
-                        <ul class="navbar-nav header-right">
-                            <li class="nav-item dropdown notification_dropdown">
-                            <li class="nav-item dropdown header-profile">
-                                <a class="nav-link" href="javascript:void(0)" role="button" data-toggle="dropdown">
-                                    <?php if (!empty($_SESSION['userImage'])): ?>
-                                        <img src="./uploads/profile_image/<?= $_SESSION['userImage'] ?>" width="120"
-                                            alt="" /> <?php else: ?>
-                                        <img class="img-fluid" style="width:70px; height:50px;"
-                                            src="./uploads/profile_image/default.png" alt="">
-                                    <?php endif; ?>
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
-                </nav>
             </div>
         </div>
         <!--**********************************
-            Header end ti-comment-alt
+            Nav header end
         ***********************************-->
 
         <!--**********************************
@@ -140,7 +125,7 @@
             <div class="deznav-scroll">
                 <ul class="metismenu" id="menu">
                     <li>
-                        <a href="javascript:void(0)" aria-expanded="false">
+                        <a href="./dashboard.php" aria-expanded="false">
                             <i class="flaticon-381-home"></i>
                             <span class="nav-text">Dashboard</span>
                         </a>
@@ -149,14 +134,10 @@
                     <?php if ($_SESSION['userRole'] == 'admin'): ?>
 
                         <li>
-                            <a class="has-arrow ai-icon" href="javascript:void(0)" aria-expanded="false">
+                            <a href="all_user.php">
                                 <i class="flaticon-381-user"></i>
                                 <span class="nav-text">Manage Users</span>
                             </a>
-                            <ul aria-expanded="false">
-                                <li><a href="./all_user.php">All Users</a></li>
-                                <li><a href="./add_user.php">Add Users</a></li>
-                            </ul>
                         </li>
 
                         <li>

@@ -124,11 +124,11 @@ require './header.php';
                                                 <input type="file" name="profileImage" class="custom-file-input">
                                                 <label class="custom-file-label">Choose file</label>
                                                 <?php if (!empty($user['userImage'])): ?>
-                                                    <img src="./uploads/profile_image/<?= $user['userImage'] ?>" width="100"
+                                                    <img src="./uploads/<?= $user['userImage'] ?>" width="100"
                                                         alt="" />
                                                 <?php else: ?>
-                                                    <img class="img-fluid mt-2" style="width:100px; height:80px;"
-                                                        src="./uploads/profile_image/default.png" alt="">
+                                                    <img class="img-fluid mt-2" style="width:100px; height:90px;"
+                                                        src="./uploads/default_avatar.png" alt="">
                                                 <?php endif; ?>
                                             </div>
                                         </div>
