@@ -50,22 +50,19 @@ if (isset($_SESSION['userRole']) && $_SESSION['userRole'] == 'admin') {
     if (isset($_GET['filter'])) {
         $defaultClass = "";
         if ($_GET['filter'] === 'pending_task') {
-            $where = "task_tbl.status = 'pending'";
+            $where = "task_tbl.status = 'pending' AND user_id = '$userId'";
             $pendingActive = "text-primary";
         } elseif ($_GET['filter'] === 'overdue_task') {
-            $where = "task_tbl.status = 'overdue'";
+            $where = "task_tbl.status = 'overdue' AND user_id = '$userId'";
             $overDueActive = "text-primary";
         }
     }
 
     $order = 'task_tbl.id DESC';
-    $limit = 5;
 
-    $pageNo = isset($_GET['page']) ? (int)$_GET['page'] : 1;
-    $offset = ($pageNo - 1) * $limit;
 
     $sl = 1;
-    $tasks = $database->all($table, $rows, $join, $where, $order, $limit, $offset);
+    $tasks = $database->all($table, $rows, $join, $where, $order);
 }
 
 require './header.php';
@@ -143,7 +140,14 @@ require './header.php';
                                         <td>
                                             <span class="text-info">
                                                 <i class="bi bi-check-circle-fill me-1"></i>
-                                                <?= strtoupper(htmlspecialchars($task['status'])) ?>
+                                                <?php
+                                                if ($task['status'] == 'in_progress') {
+                                                    echo 'In Progress';
+                                                } else {
+                                                    echo strtoupper(htmlspecialchars($task['status']));
+                                                }
+
+                                                ?>
                                             </span>
                                         </td>
                                         <?php $url =  ($_SESSION['userRole'] == 'admin') ? 'edit_task.php' : 'update _task_status.php';  ?>
@@ -151,9 +155,10 @@ require './header.php';
                                             <?php if ($task['status'] !== 'complete'): ?>
                                                 <a href="<?= $url ?>?id=<?= $task['id'] ?>"
                                                     class="btn btn-primary shadow sharp"><i class="fa fa-pencil"></i></a>
-                                                <a href="view_task.php?id=<?= $task['id'] ?>"
-                                                    class="btn btn-secondary shadow sharp"><i class="fa fa-eye"></i></a>
+
                                             <?php endif; ?>
+                                            <a href="view_task.php?id=<?= $task['id'] ?>"
+                                                class="btn btn-secondary shadow sharp"><i class="fa fa-eye"></i></a>
 
                                             <?php if ($_SESSION['userRole'] == 'admin'): ?>
                                                 <a href="delete_task.php?id=<?= $task['id'] ?>"
@@ -168,7 +173,9 @@ require './header.php';
                         </table>
 
                         <div class="d-flex justify-content-end">
-                            <?php $database->paginate($table, $pageNo, $limit) ?>
+                            <?php if ($_SESSION['userRole'] == 'admin'): ?>
+                                <?php $database->paginate($table, $pageNo, $limit) ?>
+                            <?php endif; ?>
                         </div>
                     <?php else: ?>
                         <div class="alert alert-info">No Record Found!</div>
